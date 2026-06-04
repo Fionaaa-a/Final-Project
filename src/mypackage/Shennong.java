@@ -1,15 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package mypackage;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-/**
- *
- * @author user
- */
 public class Shennong extends Character{
     private int age;
     private HealthBar healthBar;
@@ -25,7 +17,7 @@ public class Shennong extends Character{
 
     @Override
     public void draw(){
-        app.image(image, x, y);
+        app.image(image, x, y,45,45);
     }
 
     public int getHP(){

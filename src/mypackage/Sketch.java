@@ -27,9 +27,6 @@ public class Sketch extends PApplet {
         } else if (stage == 2) {
             drawGame();
         }
-        
-        text(frameRate, 20, 80);
-        
     }
 
     public void drawMenu() {
@@ -41,7 +38,6 @@ public class Sketch extends PApplet {
         text("Tasting the Hundred Herbs", width / 2, 240);
         textSize(25);
         text("Press ENTER to Start", width / 2, 500);
-        
     }
 
     public void drawStory() {
