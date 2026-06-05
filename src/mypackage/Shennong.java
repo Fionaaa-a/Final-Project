@@ -17,10 +17,14 @@ public class Shennong extends Character{
 
     @Override
     public void draw(){
-        app.image(image, x, y,45,45);
+        app.image(image, x, y,64,64);
     }
 
     public int getHP(){
         return healthBar.getHP();
+    }
+    
+    public PImage getImage() {
+        return image;
     }
 }
