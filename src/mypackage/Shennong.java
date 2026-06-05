@@ -27,4 +27,12 @@ public class Shennong extends Character{
     public PImage getImage() {
         return image;
     }
+    
+    public void heal(int amount){
+    healthBar.heal(amount);
+}
+
+    public void damage(int amount){
+        healthBar.damage(amount);
+    }
 }

@@ -1,6 +1,7 @@
 package mypackage;
 import processing.core.PApplet;
 import processing.core.PImage;
+import java.util.ArrayList;
 
 public class Sketch extends PApplet {
     private Shennong shennong;
@@ -11,6 +12,8 @@ public class Sketch extends PApplet {
     private int cameraX;
     private int cameraY;
     private PImage backgroundMap;
+    private PImage collisionMap;
+    private ArrayList<Herb> herbs;
 
     public void settings() {
         size(400,300);
@@ -22,6 +25,8 @@ public class Sketch extends PApplet {
         textSize(30);
         shennong = new Shennong(this,115,650,"Shennong",50,"image/Shennong-right.png");  
         backgroundMap = loadImage("image/Background.png");
+        collisionMap = loadImage("image/Collision.png");
+        herbs = new ArrayList<>();
     }
 
     public void draw() {
@@ -71,7 +76,7 @@ public class Sketch extends PApplet {
         cameraX = constrain(cameraX,0,MAP_WIDTH - width);
         cameraY = constrain(cameraY,0,MAP_HEIGHT - height);
         image(backgroundMap,-cameraX,-cameraY);
-        image(shennong.getImage(),shennong.getX() - cameraX,shennong.getY() - cameraY,35,35);
+        image(shennong.getImage(),shennong.getX() - cameraX,shennong.getY() - cameraY,32,32);
         fill(255);
         rect(5,5,80,25);
         fill(0);
@@ -89,19 +94,53 @@ public class Sketch extends PApplet {
         if (stage == 2) {
             if (keyPressed) {
                 if (keyCode == LEFT) {
-                  shennong.move(-5, 0);
+                    int newX = shennong.getX() - 4;
+                    if (canMoveTo(newX, shennong.getY())) {
+                        shennong.move(-4, 0);
+                    }
                 } else if (keyCode == RIGHT) {
-                  shennong.move(5, 0);
+                    int newX = shennong.getX() + 4;
+                    if (canMoveTo(newX, shennong.getY())) {
+                        shennong.move(4, 0);
+                    }
                 } else if (keyCode == UP) {
-                  shennong.move(0, -5);
+                    int newY = shennong.getY() - 4;
+                    if (canMoveTo(shennong.getX(), newY)) {
+                        shennong.move(0, -4);
+                    }
                 } else if (keyCode == DOWN) {
-                  shennong.move(0, 5);
+                    int newY = shennong.getY() + 4;
+                    if (canMoveTo(shennong.getX(), newY)) {
+                        shennong.move(0, 4);
+                    }
                 }
             }
         }
     }
+    
+    public boolean canMoveTo(int x, int y) {
+        int w = 22;
+        int h = 28;
+        return isWalkable(x, y)
+            && isWalkable(x + w, y)
+            && isWalkable(x, y + h)
+            && isWalkable(x + w, y + h);
+    }
 
+    public boolean isWalkable(int px, int py) {
+        if(px < 0 || px >= MAP_WIDTH){
+            return false;
+        }
+        if(py < 0 || py >= MAP_HEIGHT){
+            return false;
+        }
+        int c = collisionMap.get(px, py);
+        return alpha(c) == 0;
+    }
+    
     public static void main(String[] args) {
         PApplet.main("mypackage.Sketch");
     }
+    
+    
 }

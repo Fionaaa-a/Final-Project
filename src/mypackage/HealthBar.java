@@ -1,7 +1,6 @@
 package mypackage;
-import processing.core.PApplet;
 
-public class HealthBar{
+public class HealthBar {
     private int hp;
 
     public HealthBar(int hp){
@@ -12,11 +11,18 @@ public class HealthBar{
         return hp;
     }
 
-    public void loseHealth(int damage){
-        hp -= damage;
+    public void heal(int amount){
+        hp += amount;
+
+        if(hp > 100){
+            hp = 100;
+        }
     }
 
-    public void gainHealth(int amount){
-        hp += amount;
+    public void damage(int amount){
+        hp -= amount;
+        if(hp < 0){
+            hp = 0;
+        }
     }
 }
