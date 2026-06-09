@@ -14,7 +14,8 @@ public class Sketch extends PApplet {
     private PImage backgroundMap;
     private PImage collisionMap;
     private ArrayList<Herb> herbs;
-
+    private PImage currentJournalImage;
+    
     public void settings() {
         size(400,350);
     }
@@ -35,16 +36,22 @@ public class Sketch extends PApplet {
         herbs.add(new PoisonHerb(this,754,434,30,30,"Nightshade",20,"image/Nightshade.png"));
         herbs.add(new PoisonHerb(this,966,661,30,30,"Toxic Mushroom",20,"image/Toxic Mushroom.png"));
         herbs.add(new PoisonHerb(this,1017,312,30,30,"Poison Ivy",20,"image/Poison Ivy.png"));
+        currentJournalImage = null;
     }
 
     public void draw() {
         background(220);
         if (stage == 0) {
             drawMenu();
-        } else if (stage == 1) {
+        }
+        else if (stage == 1) {
             drawStory();
-        } else if (stage == 2) {
+        }
+        else if (stage == 2) {
             drawGame();
+        }
+        else if (stage == 3) {
+            drawJournalScreen();
         }
     }
 
@@ -128,6 +135,13 @@ public class Sketch extends PApplet {
                 }
             }
         }
+        if(stage == 3){
+            if(keyCode == ENTER){
+
+                stage = 2;
+            }
+            return;
+        }
     }
     
     public boolean canMoveTo(int x, int y) {
@@ -164,6 +178,8 @@ public class Sketch extends PApplet {
                     shennong.heal(
                         mh.getHealAmount()
                     );
+                    currentJournalImage =loadImage("image/"+ h.getName()+ "Collection.png");
+                    stage=3;
                 }
                 else if(h instanceof PoisonHerb){
                     PoisonHerb ph =
@@ -171,9 +187,42 @@ public class Sketch extends PApplet {
                     shennong.damage(
                         ph.getDamage()
                     );
+                    currentJournalImage =loadImage("image/"+ h.getName()+ "Collection.png");
+                    stage=3;
                 }
                 herbs.remove(i);
             }
         }
+    }
+    
+    public void drawJournalScreen(){
+        cameraX = shennong.getX() - width / 2;
+        cameraY = shennong.getY() - height / 2;
+        cameraX = constrain(cameraX,0,MAP_WIDTH - width);
+        cameraY = constrain(cameraY,0,MAP_HEIGHT - height);
+        image(backgroundMap,-cameraX,-cameraY);
+        for(Herb h : herbs){
+            image(h.image,h.getX() - cameraX,h.getY() - cameraY,30,30);
+        }
+        image(
+            shennong.getImage(),
+            shennong.getX() - cameraX,
+            shennong.getY() - cameraY,
+            32,
+            32
+        );
+        fill(0,150);
+        rect(0,0,width,height);
+        if(currentJournalImage != null){
+            image(currentJournalImage,0,125,400,100);
+        }
+        fill(255);
+        textAlign(CENTER);
+        textSize(16);
+        text(
+            "Press ENTER to continue",
+            width/2,
+            250
+        );
     }
 }
