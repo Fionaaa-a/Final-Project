@@ -8,17 +8,21 @@ public class Herb {
     protected String name;
     protected PImage image;
     protected PApplet app;
+    protected int width;
+    protected int height;
 
-    public Herb(PApplet p,int x,int y,String name,String imagePath){
+    public Herb(PApplet p,int x,int y,int width,int height,String name,String imagePath){
         this.app = p;
         this.x = x;
         this.y = y;
         this.name = name;
         image = app.loadImage(imagePath);
+        this.width = width;
+        this.height = height;
     }
 
     public void draw(){
-        app.image(image, x, y, 30, 30);
+        app.image(image,x,y,width,height);
     }
 
     public int getX(){
@@ -31,5 +35,13 @@ public class Herb {
 
     public String getName(){
         return name;
+    }
+    
+    public int getWidth(){
+    return width;
+}
+
+    public int getHeight(){
+        return height;
     }
 }

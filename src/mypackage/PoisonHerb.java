@@ -4,9 +4,9 @@ import processing.core.PApplet;
 public class PoisonHerb extends Herb {
     private int damage;
 
-    public PoisonHerb(PApplet p,int x,int y,String name,
+    public PoisonHerb(PApplet p,int x,int y,int width, int height, String name,
                       int damage,String imagePath){
-        super(p, x, y, name, imagePath);
+        super(p, x, y, width, height, name, imagePath);
         this.damage = damage;
     }
 

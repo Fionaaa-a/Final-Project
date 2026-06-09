@@ -16,7 +16,7 @@ public class Sketch extends PApplet {
     private ArrayList<Herb> herbs;
 
     public void settings() {
-        size(400,300);
+        size(400,350);
     }
 
     public void setup() {
@@ -27,6 +27,14 @@ public class Sketch extends PApplet {
         backgroundMap = loadImage("image/Background.png");
         collisionMap = loadImage("image/Collision.png");
         herbs = new ArrayList<>();
+        herbs.add(new MedicinalHerb(this,120,115,30,30,"Ginseng",20,"image/Ginseng.png"));
+        herbs.add(new MedicinalHerb(this,190,365,30,30,"Ginger",20,"image/Ginger.png"));
+        herbs.add(new MedicinalHerb(this,514,577,30,30,"Goji Berry",20,"image/Goji Berry.png"));
+        herbs.add(new MedicinalHerb(this,532,393,30,30,"Lingzhi",20,"image/Lingzhi.png"));
+        herbs.add(new MedicinalHerb(this,667,77,30,30,"Mint",20,"image/Mint.png"));
+        herbs.add(new PoisonHerb(this,754,434,30,30,"Nightshade",20,"image/Nightshade.png"));
+        herbs.add(new PoisonHerb(this,966,661,30,30,"Toxic Mushroom",20,"image/Toxic Mushroom.png"));
+        herbs.add(new PoisonHerb(this,1017,312,30,30,"Poison Ivy",20,"image/Poison Ivy.png"));
     }
 
     public void draw() {
@@ -76,6 +84,9 @@ public class Sketch extends PApplet {
         cameraX = constrain(cameraX,0,MAP_WIDTH - width);
         cameraY = constrain(cameraY,0,MAP_HEIGHT - height);
         image(backgroundMap,-cameraX,-cameraY);
+        for(Herb h : herbs){
+            image(h.image,h.getX() - cameraX,h.getY() - cameraY,30,30);
+        }
         image(shennong.getImage(),shennong.getX() - cameraX,shennong.getY() - cameraY,32,32);
         fill(255);
         rect(5,5,80,25);
@@ -83,6 +94,7 @@ public class Sketch extends PApplet {
         textAlign(LEFT);
         textSize(14);
         text("HP: " + shennong.getHP(),10,22);
+        checkHerbCollisions();
     }
 
     public void keyPressed() {
@@ -142,5 +154,26 @@ public class Sketch extends PApplet {
         PApplet.main("mypackage.Sketch");
     }
     
-    
+    public void checkHerbCollisions(){
+        for(int i = herbs.size()-1; i >= 0; i--){
+            Herb h = herbs.get(i);
+            if(shennong.isCollidingWith(h)){
+                if(h instanceof MedicinalHerb){
+                    MedicinalHerb mh =
+                        (MedicinalHerb) h;
+                    shennong.heal(
+                        mh.getHealAmount()
+                    );
+                }
+                else if(h instanceof PoisonHerb){
+                    PoisonHerb ph =
+                        (PoisonHerb) h;
+                    shennong.damage(
+                        ph.getDamage()
+                    );
+                }
+                herbs.remove(i);
+            }
+        }
+    }
 }

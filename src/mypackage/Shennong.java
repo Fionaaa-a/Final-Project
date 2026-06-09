@@ -9,7 +9,7 @@ public class Shennong extends Character{
     private PImage image;
     
     public Shennong(PApplet p,int x,int y,String name,int age,String imagePath){
-        super(p,x,y,name);
+        super(p,x,y,32,32,name);
         this.age = age;
         healthBar = new HealthBar(100);
         this.image = app.loadImage(imagePath);
