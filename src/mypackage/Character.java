@@ -33,7 +33,6 @@ public class Character{
     }
 
     public void draw(){
-
     }
     
     public int getWidth(){
