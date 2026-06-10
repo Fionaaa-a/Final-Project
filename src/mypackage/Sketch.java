@@ -16,12 +16,13 @@ public class Sketch extends PApplet {
     private ArrayList<Herb> herbs;
     private PImage currentJournalImage;
     private ArrayList<WildBoar> boars;
+    private ArrayList<Snake> snakes;
     private PImage book;
-private int collectedCount = 0;
-private boolean showBookMessage = false;
-private boolean nearBook = false;
-private final int BOOK_X = 1040;
-private final int BOOK_Y = 41;
+    private int collectedCount = 0;
+    private boolean showBookMessage = false;
+    private boolean nearBook = false;
+    private final int BOOK_X = 1040;
+    private final int BOOK_Y = 41;
     
     public void settings() {
         size(400,350);
@@ -47,12 +48,16 @@ private final int BOOK_Y = 41;
         
         boars = new ArrayList<>();
         boars.add(new WildBoar(this,195,200,"Boar1","image/Wild Boar-right.png",0,0,150,250));
-        boars.add(new WildBoar(this,460,570,"Boar1","image/Wild Boar-right.png",0,0,510,570));
-        boars.add(new WildBoar(this,580,500,"Boar1","image/Wild Boar-right.png",520,620,0,0));
-        boars.add(new WildBoar(this,656,170,"Boar1","image/Wild Boar-right.png",620,710,0,0));
-        boars.add(new WildBoar(this,750,480,"Boar1","image/Wild Boar-right.png",690,800,0,0));
-        boars.add(new WildBoar(this,1000,620,"Boar1","image/Wild Boar-right.png",940,1180,0,0));
+        boars.add(new WildBoar(this,460,570,"Boar2","image/Wild Boar-right.png",0,0,510,570));
+        boars.add(new WildBoar(this,580,500,"Boar3","image/Wild Boar-right.png",520,620,0,0));
+        boars.add(new WildBoar(this,656,170,"Boar4","image/Wild Boar-right.png",620,710,0,0));
+        boars.add(new WildBoar(this,750,480,"Boar5","image/Wild Boar-right.png",690,800,0,0));
+        boars.add(new WildBoar(this,1000,620,"Boar6","image/Wild Boar-right.png",940,1180,0,0));
         
+        snakes = new ArrayList<>();
+        snakes.add(new Snake(this,1000,270,"snake1","image/Snake-left.png",971,1074,0,0));
+        snakes.add(new Snake(this,967,353,"snake2","image/Snake-left.png",0,0,300,370));
+        snakes.add(new Snake(this,967,391,"snake3","image/Snake-left.png",980,1060,0,0));
         book = loadImage("image/Book.png");
     }
 
@@ -123,69 +128,47 @@ private final int BOOK_Y = 41;
         text("HP: " + shennong.getHP(),10,22);
         checkHerbCollisions();
         checkBoarCollisions();
+        checkSnakeCollisions();
         drawBoars();
+        drawSnakes();
         checkBookCollision();
         fill(255);
-rect(0,0,120,20);
-
-fill(0);
-textSize(12);
-textAlign(LEFT);
-
-text(
-    shennong.getX()+","+shennong.getY(),
-    5,
-    15
-);
-
-image(
-    book,
-    BOOK_X - cameraX,
-    BOOK_Y - cameraY,
-    100,
-    100
-);
-
-if(showBookMessage){
-
-    fill(0,180);
-    rect(50,120,300,80);
-
-    fill(255);
-    textAlign(CENTER);
-    textSize(14);
-
-    text(
-        "You need all 8 herbs\nbefore completing the Herbal Book!",
-        width/2,
-        155
-    );
-}
+        image(book,BOOK_X - cameraX,BOOK_Y - cameraY,100,100);
+        if(showBookMessage){
+            fill(0,180);
+            rect(50,120,300,80);
+            fill(255);
+            textAlign(CENTER);
+            textSize(14);
+            text(
+                "You need all 8 herbs\nbefore completing the Herbal Book!",
+                width/2,
+                155
+            );
+        }
     }
     
     public void drawBoars(){
         for(WildBoar b : boars){
             b.update();
-            image(
-                b.getImage(),
-                b.getX()-cameraX,
-                b.getY()-cameraY,
-                40,
-                40
-            );
+            image(b.getImage(),b.getX()-cameraX,b.getY()-cameraY,40,40);
         }
     }
         
+    public void drawSnakes(){
+        for(Snake s : snakes){
+            s.update();
+            image(s.getImage(),s.getX()-cameraX,s.getY()-cameraY,25,25);
+        }
+    }
 
     public void keyPressed() {
         if(showBookMessage){
-
-    if(keyCode == ENTER){
-        showBookMessage = false;
-    }
-
-    return;
-}
+            if(keyCode == ENTER){
+                showBookMessage = false;
+            }
+        return;
+        }
         if (keyCode == ENTER) {
             if (stage < 2) {
                 stage++;
@@ -218,7 +201,6 @@ if(showBookMessage){
         }
         if(stage == 3){
             if(keyCode == ENTER){
-
                 stage = 2;
             }
             return;
@@ -279,33 +261,46 @@ if(showBookMessage){
     }
     
     public void checkBoarCollisions(){
-
-    for(WildBoar b : boars){
-
-        boolean collide =
-            shennong.getX() < b.getX()+b.getWidth()
-            &&
-            shennong.getX()+32 > b.getX()
-            &&
-            shennong.getY() < b.getY()+b.getHeight()
-            &&
-            shennong.getY()+32 > b.getY();
-
-        if(collide){
-
-            shennong.damage(10);
-
-            if(shennong.getX() < b.getX()){
-
-                shennong.move(-30,0);
-
-            }else{
-
-                shennong.move(30,0);
+        for(WildBoar b : boars){
+            boolean collide =
+                shennong.getX() < b.getX()+b.getWidth()
+                &&
+                shennong.getX()+32 > b.getX()
+                &&
+                shennong.getY() < b.getY()+b.getHeight()
+                &&
+                shennong.getY()+32 > b.getY();
+            if(collide){
+                shennong.damage(10);
+                if(shennong.getX() < b.getX()){
+                    shennong.move(-20,0);
+                }else{
+                    shennong.move(20,0);
+                }
             }
         }
     }
-}
+    
+    public void checkSnakeCollisions(){
+        for(Snake s : snakes){
+            boolean collide =
+                shennong.getX() < s.getX()+s.getWidth()
+                &&
+                shennong.getX()+32 > s.getX()
+                &&
+                shennong.getY() < s.getY()+s.getHeight()
+                &&
+                shennong.getY()+32 > s.getY();
+            if(collide){
+                shennong.damage(10);
+                if(shennong.getX() < s.getX()){
+                    shennong.move(-20,0);
+                }else{
+                    shennong.move(20,0);
+                }
+            }
+        }
+    }
     
     public void drawJournalScreen(){
         cameraX = shennong.getX() - width / 2;
@@ -329,63 +324,45 @@ if(showBookMessage){
     }
     
     public void checkBookCollision(){
-
     boolean collide =
         shennong.getX() < BOOK_X + 100 &&
         shennong.getX() + 32 > BOOK_X &&
         shennong.getY() < BOOK_Y + 100 &&
         shennong.getY() + 32 > BOOK_Y;
-
     if(collide){
-
         if(!nearBook){
-
             if(collectedCount >= 8){
-
                 stage = 4;
-
             }else{
-
                 showBookMessage = true;
-
             }
         }
-
         nearBook = true;
-
     }else{
-
         nearBook = false;
     }
 }
     
     public void drawEnding(){
-
-    background(245,235,210);
-
-    fill(0);
-
-    textAlign(CENTER);
-
-    textSize(28);
-
-    text(
-        "Congratulations!",
-        width/2,
-        70
-    );
-
-    textSize(16);
-
-    text(
-        "After tasting many herbs,\n\n"
-      + "Shennong compiled a book\n"
-      + "of medicinal knowledge.\n\n"
-      + "His discoveries helped\n"
-      + "future generations stay healthy.\n\n"
-      + "The End",
-        width/2,
-        130
-    );
-}
+        background(245,235,210);
+        fill(0);
+        textAlign(CENTER);
+        textSize(28);
+        text(
+            "Congratulations!",
+            width/2,
+            70
+        );
+        textSize(16);
+        text(
+            "After tasting many herbs,\n\n"
+          + "Shennong compiled a book\n"
+          + "of medicinal knowledge.\n\n"
+          + "His discoveries helped\n"
+          + "future generations stay healthy.\n\n"
+          + "The End",
+            width/2,
+            130
+        );
+    }
 }
