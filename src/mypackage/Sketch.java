@@ -15,6 +15,13 @@ public class Sketch extends PApplet {
     private PImage collisionMap;
     private ArrayList<Herb> herbs;
     private PImage currentJournalImage;
+    private ArrayList<WildBoar> boars;
+    private PImage book;
+private int collectedCount = 0;
+private boolean showBookMessage = false;
+private boolean nearBook = false;
+private final int BOOK_X = 1040;
+private final int BOOK_Y = 41;
     
     public void settings() {
         size(400,350);
@@ -37,6 +44,16 @@ public class Sketch extends PApplet {
         herbs.add(new PoisonHerb(this,966,661,30,30,"Toxic Mushroom",20,"image/Toxic Mushroom.png"));
         herbs.add(new PoisonHerb(this,1017,312,30,30,"Poison Ivy",20,"image/Poison Ivy.png"));
         currentJournalImage = null;
+        
+        boars = new ArrayList<>();
+        boars.add(new WildBoar(this,195,200,"Boar1","image/Wild Boar-right.png",0,0,150,250));
+        boars.add(new WildBoar(this,460,570,"Boar1","image/Wild Boar-right.png",0,0,510,570));
+        boars.add(new WildBoar(this,580,500,"Boar1","image/Wild Boar-right.png",520,620,0,0));
+        boars.add(new WildBoar(this,656,170,"Boar1","image/Wild Boar-right.png",620,710,0,0));
+        boars.add(new WildBoar(this,750,480,"Boar1","image/Wild Boar-right.png",690,800,0,0));
+        boars.add(new WildBoar(this,1000,620,"Boar1","image/Wild Boar-right.png",940,1180,0,0));
+        
+        book = loadImage("image/Book.png");
     }
 
     public void draw() {
@@ -52,7 +69,9 @@ public class Sketch extends PApplet {
         }
         else if (stage == 3) {
             drawJournalScreen();
-        }
+        }else if(stage == 4){
+            drawEnding();
+}
     }
 
     public void drawMenu() {
@@ -94,6 +113,7 @@ public class Sketch extends PApplet {
         for(Herb h : herbs){
             image(h.image,h.getX() - cameraX,h.getY() - cameraY,30,30);
         }
+         
         image(shennong.getImage(),shennong.getX() - cameraX,shennong.getY() - cameraY,32,32);
         fill(255);
         rect(5,5,80,25);
@@ -102,9 +122,70 @@ public class Sketch extends PApplet {
         textSize(14);
         text("HP: " + shennong.getHP(),10,22);
         checkHerbCollisions();
+        checkBoarCollisions();
+        drawBoars();
+        checkBookCollision();
+        fill(255);
+rect(0,0,120,20);
+
+fill(0);
+textSize(12);
+textAlign(LEFT);
+
+text(
+    shennong.getX()+","+shennong.getY(),
+    5,
+    15
+);
+
+image(
+    book,
+    BOOK_X - cameraX,
+    BOOK_Y - cameraY,
+    100,
+    100
+);
+
+if(showBookMessage){
+
+    fill(0,180);
+    rect(50,120,300,80);
+
+    fill(255);
+    textAlign(CENTER);
+    textSize(14);
+
+    text(
+        "You need all 8 herbs\nbefore completing the Herbal Book!",
+        width/2,
+        155
+    );
+}
     }
+    
+    public void drawBoars(){
+        for(WildBoar b : boars){
+            b.update();
+            image(
+                b.getImage(),
+                b.getX()-cameraX,
+                b.getY()-cameraY,
+                40,
+                40
+            );
+        }
+    }
+        
 
     public void keyPressed() {
+        if(showBookMessage){
+
+    if(keyCode == ENTER){
+        showBookMessage = false;
+    }
+
+    return;
+}
         if (keyCode == ENTER) {
             if (stage < 2) {
                 stage++;
@@ -180,6 +261,7 @@ public class Sketch extends PApplet {
                     );
                     currentJournalImage =loadImage("image/"+ h.getName()+ "Collection.png");
                     stage=3;
+                    collectedCount++;
                 }
                 else if(h instanceof PoisonHerb){
                     PoisonHerb ph =
@@ -189,11 +271,41 @@ public class Sketch extends PApplet {
                     );
                     currentJournalImage =loadImage("image/"+ h.getName()+ "Collection.png");
                     stage=3;
+                    collectedCount++;
                 }
                 herbs.remove(i);
             }
         }
     }
+    
+    public void checkBoarCollisions(){
+
+    for(WildBoar b : boars){
+
+        boolean collide =
+            shennong.getX() < b.getX()+b.getWidth()
+            &&
+            shennong.getX()+32 > b.getX()
+            &&
+            shennong.getY() < b.getY()+b.getHeight()
+            &&
+            shennong.getY()+32 > b.getY();
+
+        if(collide){
+
+            shennong.damage(10);
+
+            if(shennong.getX() < b.getX()){
+
+                shennong.move(-30,0);
+
+            }else{
+
+                shennong.move(30,0);
+            }
+        }
+    }
+}
     
     public void drawJournalScreen(){
         cameraX = shennong.getX() - width / 2;
@@ -204,13 +316,7 @@ public class Sketch extends PApplet {
         for(Herb h : herbs){
             image(h.image,h.getX() - cameraX,h.getY() - cameraY,30,30);
         }
-        image(
-            shennong.getImage(),
-            shennong.getX() - cameraX,
-            shennong.getY() - cameraY,
-            32,
-            32
-        );
+        image(shennong.getImage(),shennong.getX() - cameraX,shennong.getY() - cameraY,32,32);
         fill(0,150);
         rect(0,0,width,height);
         if(currentJournalImage != null){
@@ -219,10 +325,67 @@ public class Sketch extends PApplet {
         fill(255);
         textAlign(CENTER);
         textSize(16);
-        text(
-            "Press ENTER to continue",
-            width/2,
-            250
-        );
+        text("Press ENTER to continue",width/2,250);
     }
+    
+    public void checkBookCollision(){
+
+    boolean collide =
+        shennong.getX() < BOOK_X + 100 &&
+        shennong.getX() + 32 > BOOK_X &&
+        shennong.getY() < BOOK_Y + 100 &&
+        shennong.getY() + 32 > BOOK_Y;
+
+    if(collide){
+
+        if(!nearBook){
+
+            if(collectedCount >= 8){
+
+                stage = 4;
+
+            }else{
+
+                showBookMessage = true;
+
+            }
+        }
+
+        nearBook = true;
+
+    }else{
+
+        nearBook = false;
+    }
+}
+    
+    public void drawEnding(){
+
+    background(245,235,210);
+
+    fill(0);
+
+    textAlign(CENTER);
+
+    textSize(28);
+
+    text(
+        "Congratulations!",
+        width/2,
+        70
+    );
+
+    textSize(16);
+
+    text(
+        "After tasting many herbs,\n\n"
+      + "Shennong compiled a book\n"
+      + "of medicinal knowledge.\n\n"
+      + "His discoveries helped\n"
+      + "future generations stay healthy.\n\n"
+      + "The End",
+        width/2,
+        130
+    );
+}
 }
