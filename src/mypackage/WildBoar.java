@@ -16,14 +16,8 @@ public class WildBoar extends Character{
     private int botBound;
     private boolean movingRight;
 
-    public WildBoar(
-            PApplet p,
-            int x,
-            int y,
-            String name,
-            String imagePath,
-            int leftBound,
-            int rightBound,int upBound,int botBound){
+    public WildBoar(PApplet p,int x,int y,String name,String imagePath,
+                    int leftBound,int rightBound,int upBound,int botBound){
         super(p,x,y,40,40,name);
         image = app.loadImage(imagePath);
         speed = 1.8;
@@ -32,6 +26,10 @@ public class WildBoar extends Character{
         this.upBound = upBound;
         this.botBound = botBound;
         movingRight = true;
+    }
+    
+    public WildBoar(PApplet p,int x,int y,String name){
+        this(p,x,y,name,"image/Wild Boar-right.png",0,100,0,0);
     }
     
     public void update(){

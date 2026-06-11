@@ -1,7 +1,12 @@
 package mypackage;
+import java.io.File;
 import processing.core.PApplet;
 import processing.core.PImage;
 import java.util.ArrayList;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.util.Scanner;
 
 public class Sketch extends PApplet {
     private Shennong shennong;
@@ -23,6 +28,8 @@ public class Sketch extends PApplet {
     private boolean nearBook = false;
     private final int BOOK_X = 1040;
     private final int BOOK_Y = 41;
+    public static int score;
+    private int[][] explored;
     
     public void settings() {
         size(400,350);
@@ -34,6 +41,7 @@ public class Sketch extends PApplet {
         textSize(30);
         shennong = new Shennong(this,115,650,"Shennong",50,"image/Shennong-right.png");  
         backgroundMap = loadImage("image/Background.png");
+        explored = new int[12][8];
         collisionMap = loadImage("image/Collision.png");
         herbs = new ArrayList<>();
         herbs.add(new MedicinalHerb(this,120,115,30,30,"Ginseng",20,"image/Ginseng.png"));
@@ -110,6 +118,9 @@ public class Sketch extends PApplet {
     }
 
     public void drawGame() {
+        int col = shennong.getX() / 100;
+        int row = shennong.getY() / 100;
+        explored[col][row] = 1;
         cameraX = shennong.getX() - width / 2;
         cameraY = shennong.getY() - height / 2;
         cameraX = constrain(cameraX,0,MAP_WIDTH - width);
@@ -126,6 +137,7 @@ public class Sketch extends PApplet {
         textAlign(LEFT);
         textSize(14);
         text("HP: " + shennong.getHP(),10,22);
+        text("Explored: " + getExploredCount() + "/96",10,45);
         checkHerbCollisions();
         checkBoarCollisions();
         checkSnakeCollisions();
@@ -205,6 +217,20 @@ public class Sketch extends PApplet {
             }
             return;
         }
+        if (stage == 4) {
+            if (key == 's' || key == 'S') {
+                try {
+                    FileWriter fw = new FileWriter("Score.txt", false);
+                    fw.write("Score: " + score + "/8\n");
+                    fw.write("Save Status: OK\n");
+                    fw.flush(); 
+                    fw.close(); 
+                    System.out.println("--- MANUAL SAVE SUCCESSFUL ---");
+                } catch (Exception e) {
+                    System.err.print("Error");
+                }
+            }
+        }
     }
     
     public boolean canMoveTo(int x, int y) {
@@ -229,6 +255,20 @@ public class Sketch extends PApplet {
     
     public static void main(String[] args) {
         PApplet.main("mypackage.Sketch");
+        int line = 0;
+        try {
+            Scanner fileInput = new Scanner(new File("attempt.txt"));
+            while (fileInput.hasNext()) {
+                String output = fileInput.nextLine();
+                String[] info = output.split(",");
+                String name = info[0].trim();
+                String attempt = info[1].trim();
+                line++;
+            }
+            fileInput.close();
+        } catch (IOException e) {
+            System.err.println("Error");
+        }   
     }
     
     public void checkHerbCollisions(){
@@ -256,6 +296,8 @@ public class Sketch extends PApplet {
                     collectedCount++;
                 }
                 herbs.remove(i);
+                score=collectedCount;
+
             }
         }
     }
@@ -324,35 +366,31 @@ public class Sketch extends PApplet {
     }
     
     public void checkBookCollision(){
-    boolean collide =
-        shennong.getX() < BOOK_X + 100 &&
-        shennong.getX() + 32 > BOOK_X &&
-        shennong.getY() < BOOK_Y + 100 &&
-        shennong.getY() + 32 > BOOK_Y;
-    if(collide){
-        if(!nearBook){
-            if(collectedCount >= 8){
-                stage = 4;
-            }else{
-                showBookMessage = true;
+        boolean collide =
+            shennong.getX() < BOOK_X + 100 &&
+            shennong.getX() + 32 > BOOK_X &&
+            shennong.getY() < BOOK_Y + 100 &&
+            shennong.getY() + 32 > BOOK_Y;
+        if(collide){
+            if(!nearBook){
+                if(collectedCount >= 8){
+                    stage = 4;
+                }else{
+                    showBookMessage = true;
+                }
             }
+            nearBook = true;
+        }else{
+            nearBook = false;
         }
-        nearBook = true;
-    }else{
-        nearBook = false;
     }
-}
     
-    public void drawEnding(){
+    public void drawEnding(){    
         background(245,235,210);
         fill(0);
         textAlign(CENTER);
         textSize(28);
-        text(
-            "Congratulations!",
-            width/2,
-            70
-        );
+        text("Congratulations!", width/2, 70);
         textSize(16);
         text(
             "After tasting many herbs,\n\n"
@@ -360,9 +398,28 @@ public class Sketch extends PApplet {
           + "of medicinal knowledge.\n\n"
           + "His discoveries helped\n"
           + "future generations stay healthy.\n\n"
-          + "The End",
+          + "Collected Herbs: " + score + "/8",
             width/2,
             130
         );
+        textSize(22);
+        text("THE END", width/2, 290);
+        textSize(12);
+        text("Your score has been saved to Score.txt", width/2, 325);
+        textSize(14);
+        fill(255, 0, 0); 
+        text("Press 'S' key to save your score to file!", width/2, 250);
+    }
+    
+    public int getExploredCount(){
+        int count = 0;
+        for(int c=0;c<12;c++){
+            for(int r=0;r<8;r++){
+                if(explored[c][r] == 1){
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 }

@@ -10,6 +10,7 @@ public class Herb {
     protected PApplet app;
     protected int width;
     protected int height;
+    public static int totalHerbs = 0;
 
     public Herb(PApplet p,int x,int y,int width,int height,String name,String imagePath){
         this.app = p;
@@ -19,6 +20,7 @@ public class Herb {
         image = app.loadImage(imagePath);
         this.width = width;
         this.height = height;
+        totalHerbs++;
     }
 
     public void draw(){
