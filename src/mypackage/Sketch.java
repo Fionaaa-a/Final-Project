@@ -30,6 +30,7 @@ public class Sketch extends PApplet {
     private final int BOOK_Y = 41;
     public static int score;
     private int[][] explored;
+    private boolean scoreSaved = false;
     
     public void settings() {
         size(400,350);
@@ -217,20 +218,6 @@ public class Sketch extends PApplet {
             }
             return;
         }
-        if (stage == 4) {
-            if (key == 's' || key == 'S') {
-                try {
-                    FileWriter fw = new FileWriter("Score.txt", false);
-                    fw.write("Score: " + score + "/8\n");
-                    fw.write("Save Status: OK\n");
-                    fw.flush(); 
-                    fw.close(); 
-                    System.out.println("--- MANUAL SAVE SUCCESSFUL ---");
-                } catch (Exception e) {
-                    System.err.print("Error");
-                }
-            }
-        }
     }
     
     public boolean canMoveTo(int x, int y) {
@@ -386,6 +373,17 @@ public class Sketch extends PApplet {
     }
     
     public void drawEnding(){    
+        if(!scoreSaved){
+            try{
+                FileWriter writer =new FileWriter("score.txt",true);
+                PrintWriter output =new PrintWriter(writer);
+                output.println("Score got:" + score);
+                output.close();
+                scoreSaved = true;
+            }catch(IOException e){
+                System.err.println("Java Exception: " + e);
+            }
+        }
         background(245,235,210);
         fill(0);
         textAlign(CENTER);
