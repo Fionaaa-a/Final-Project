@@ -53,8 +53,9 @@ public class Sketch extends PApplet {
         herbs.add(new PoisonHerb(this,754,434,30,30,"Nightshade",20,"image/Nightshade.png"));
         herbs.add(new PoisonHerb(this,966,661,30,30,"Toxic Mushroom",20,"image/Toxic Mushroom.png"));
         herbs.add(new PoisonHerb(this,1017,312,30,30,"Poison Ivy",20,"image/Poison Ivy.png"));
-        currentJournalImage = null;
         
+        currentJournalImage = null;
+       
         boars = new ArrayList<>();
         boars.add(new WildBoar(this,195,200,"Boar1","image/Wild Boar-right.png",0,0,150,250));
         boars.add(new WildBoar(this,460,570,"Boar2","image/Wild Boar-right.png",0,0,510,570));
@@ -64,9 +65,9 @@ public class Sketch extends PApplet {
         boars.add(new WildBoar(this,1000,620,"Boar6","image/Wild Boar-right.png",940,1180,0,0));
         
         snakes = new ArrayList<>();
-        snakes.add(new Snake(this,1000,270,"snake1","image/Snake-left.png",971,1074,0,0));
+        snakes.add(new Snake(this,1000,270,"snake1","image/Snake-right.png",971,1074,0,0));
         snakes.add(new Snake(this,967,353,"snake2","image/Snake-left.png",0,0,300,370));
-        snakes.add(new Snake(this,967,391,"snake3","image/Snake-left.png",980,1060,0,0));
+        snakes.add(new Snake(this,967,391,"snake3","image/Snake-right.png",980,1060,0,0));
         book = loadImage("image/Book.png");
     }
 
@@ -85,7 +86,7 @@ public class Sketch extends PApplet {
             drawJournalScreen();
         }else if(stage == 4){
             drawEnding();
-}
+        }
     }
 
     public void drawMenu() {
@@ -153,11 +154,7 @@ public class Sketch extends PApplet {
             fill(255);
             textAlign(CENTER);
             textSize(14);
-            text(
-                "You need all 8 herbs\nbefore completing the Herbal Book!",
-                width/2,
-                155
-            );
+            text("You need all 8 herbs\nbefore completing the Herbal Book!",width/2,155);
         }
     }
     
@@ -401,12 +398,7 @@ public class Sketch extends PApplet {
             130
         );
         textSize(22);
-        text("THE END", width/2, 290);
-        textSize(12);
-        text("Your score has been saved to Score.txt", width/2, 325);
-        textSize(14);
-        fill(255, 0, 0); 
-        text("Press 'S' key to save your score to file!", width/2, 250);
+        text("THE END", width/2, 320);
     }
     
     public int getExploredCount(){

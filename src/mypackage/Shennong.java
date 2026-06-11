@@ -29,8 +29,8 @@ public class Shennong extends Character{
     }
     
     public void heal(int amount){
-    healthBar.heal(amount);
-}
+        healthBar.heal(amount);
+    }
 
     public void damage(int amount){
         healthBar.damage(amount);
