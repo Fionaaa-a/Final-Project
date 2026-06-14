@@ -1,76 +1,145 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package mypackage;
 import processing.core.PApplet;
 import processing.core.PImage;
 
-
-public class WildBoar extends Character{
+/**
+ * Represents a wild boar enemy.
+ * The boar moves back and forth between specified boundaries
+ * and can damage the player upon collision.
+ *
+ * @author Fiona
+ */
+public class WildBoar extends Character {
+    // Boar image
     private PImage image;
+    // Movement speed
     private double speed;
+    // Horizontal patrol boundaries
     private int leftBound;
     private int rightBound;
+    // Vertical patrol boundaries
     private int upBound;
     private int botBound;
+    // Current movement direction
     private boolean movingRight;
 
-    public WildBoar(PApplet p,int x,int y,String name,String imagePath,
-                    int leftBound,int rightBound,int upBound,int botBound){
-        super(p,x,y,40,40,name);
+    /**
+     * Creates a wild boar with custom movement boundaries.
+     *
+     * @param p Processing application
+     * @param x starting x-coordinate
+     * @param y starting y-coordinate
+     * @param name boar name
+     * @param imagePath image file path
+     * @param leftBound left patrol limit
+     * @param rightBound right patrol limit
+     * @param upBound upper patrol limit
+     * @param botBound lower patrol limit
+     */
+    public WildBoar(PApplet p, int x, int y, String name,
+                    String imagePath,
+                    int leftBound, int rightBound,
+                    int upBound, int botBound) {
+        // Call parent constructor
+        super(p, x, y, 40, 40, name);
+        // Load boar image
         image = app.loadImage(imagePath);
+        // Set movement speed
         speed = 1.8;
+        // Store patrol boundaries
         this.leftBound = leftBound;
         this.rightBound = rightBound;
         this.upBound = upBound;
         this.botBound = botBound;
+        // Start moving forward
         movingRight = true;
     }
-    
-    public WildBoar(PApplet p,int x,int y,String name){
-        this(p,x,y,name,"image/Wild Boar-right.png",0,100,0,0);
+
+    /**
+     * Overloaded constructor that creates a boar
+     * using default values.
+     *
+     * @param p Processing application
+     * @param x starting x-coordinate
+     * @param y starting y-coordinate
+     * @param name boar name
+     */
+    public WildBoar(PApplet p, int x, int y, String name) {
+        // Call the main constructor with default settings
+        this(p, x, y, name,
+             "image/Wild Boar-right.png",
+             0, 100, 0, 0);
     }
-    
-    public void update(){
-        if(upBound != botBound){
-            if(movingRight){
+
+    /**
+     * Updates the boar's position.
+     * The boar patrols horizontally or vertically
+     * depending on the boundaries provided.
+     */
+    public void update() {
+        // Vertical movement
+        if (upBound != botBound) {
+            if (movingRight) {
+                // Move downward
                 y += speed;
-                if(y >= botBound){
+                // Reverse direction at lower bound
+                if (y >= botBound) {
                     movingRight = false;
                 }
-            }else{
+            } else {
+                // Move upward
                 y -= speed;
-                if(y <= upBound){
+                // Reverse direction at upper bound
+                if (y <= upBound) {
                     movingRight = true;
                 }
             }
         }
-        else if(leftBound != rightBound){
-            if(movingRight){
+
+        // Horizontal movement
+        else if (leftBound != rightBound) {
+            if (movingRight) {
+                // Move right
                 x += speed;
-                if(x >= rightBound){
+                // Reverse direction at right boundary
+                if (x >= rightBound) {
                     movingRight = false;
                 }
-            }else{
+            } else {
+                // Move left
                 x -= speed;
-                if(x <= leftBound){
+                // Reverse direction at left boundary
+                if (x <= leftBound) {
                     movingRight = true;
                 }
             }
         }
     }
 
-    public int getWidth(){
+    /**
+     * Returns the boar's width.
+     *
+     * @return width
+     */
+    public int getWidth() {
         return width;
     }
 
-    public int getHeight(){
+    /**
+     * Returns the boar's height.
+     *
+     * @return height
+     */
+    public int getHeight() {
         return height;
     }
-    
+
+    /**
+     * Returns the boar image.
+     *
+     * @return boar image
+     */
     public PImage getImage() {
         return image;
     }
-       
 }
