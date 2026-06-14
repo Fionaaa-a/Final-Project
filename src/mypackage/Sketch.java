@@ -37,6 +37,9 @@ public class Sketch extends PApplet {
     private boolean downPressed;
     private boolean leftPressed;
     private boolean rightPressed;
+    private int damageTimer = 0;
+    private int enemyFreezeTimer = 0;
+
     
     public void settings() {
         size(400,350);
@@ -139,6 +142,10 @@ public class Sketch extends PApplet {
         cameraY = shennong.getY() - height / 2;
         cameraX = constrain(cameraX,0,MAP_WIDTH - width);
         cameraY = constrain(cameraY,0,MAP_HEIGHT - height);
+        if(damageTimer > 0){
+            cameraX += (int)random(-3,3);
+            cameraY += (int)random(-3,3);
+        }
         image(backgroundMap,-cameraX,-cameraY);
         for(Herb h : herbs){
             image(h.image,h.getX() - cameraX,h.getY() - cameraY,30,30);
@@ -172,18 +179,30 @@ public class Sketch extends PApplet {
             stage = 5;
         }
         drawMiniMap();
+        if(damageTimer > 0){
+            fill(255,0,0,damageTimer * 5);
+            rect(0,0,width,height);
+            damageTimer--;
+        }
+        if(enemyFreezeTimer > 0){
+            enemyFreezeTimer--;
+        }
     }
     
     public void drawBoars(){
         for(WildBoar b : boars){
-            b.update();
+            if(enemyFreezeTimer <= 0){
+                b.update();
+            }
             image(b.getImage(),b.getX()-cameraX,b.getY()-cameraY,40,40);
         }
     }
         
     public void drawSnakes(){
         for(Snake s : snakes){
-            s.update();
+            if(enemyFreezeTimer <= 0){
+                s.update();
+            }
             image(s.getImage(),s.getX()-cameraX,s.getY()-cameraY,25,25);
         }
     }
@@ -221,6 +240,7 @@ public class Sketch extends PApplet {
         if(stage == 3){
             if(keyCode == ENTER){
                 stage = 2;
+                enemyFreezeTimer = 30;
             }
             return;
         }
@@ -246,9 +266,11 @@ public class Sketch extends PApplet {
         int dy = 0;
         if(leftPressed){
             dx -= 2;
+            shennong.faceLeft();
         }
         if(rightPressed){
             dx += 2;
+            shennong.faceRight();
         }
         if(upPressed){
             dy -= 2;
@@ -256,8 +278,16 @@ public class Sketch extends PApplet {
         if(downPressed){
             dy += 2;
         }
-        if(canMoveTo(shennong.getX()+dx,shennong.getY()+dy)){
+        if(canMoveTo(
+            shennong.getX()+dx,
+            shennong.getY()+dy
+        )){
             shennong.move(dx,dy);
+        }
+        if(dx != 0 || dy != 0){
+            shennong.animate();
+        }else{
+            shennong.idle();
         }
     }
     
@@ -336,6 +366,7 @@ public class Sketch extends PApplet {
                 shennong.getY()+32 > b.getY();
             if(collide){
                 shennong.damage(10);
+                damageTimer = 40;
                 if(shennong.getX() < b.getX()){
                     shennong.move(-20,0);
                 }else{
@@ -357,6 +388,7 @@ public class Sketch extends PApplet {
                 shennong.getY()+32 > s.getY();
             if(collide){
                 shennong.damage(10);
+                damageTimer = 40;
                 if(shennong.getX() < s.getX()){
                     shennong.move(-20,0);
                 }else{
